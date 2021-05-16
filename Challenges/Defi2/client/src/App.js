@@ -35,11 +35,22 @@ class App extends Component {
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
+      if (networkId != 1337) {
+        alert(
+          "Wrong Network(" +
+            networkId +
+            "). Please Switch to Alyra Network(1337) "
+        );
+        return;
+      }
       const deployedNetwork = VotingContract.networks[networkId];
       const instance = new web3.eth.Contract(
         VotingContract.abi,
         deployedNetwork && deployedNetwork.address
       );
+
+      // Set a timer to refresh the page every 10 seconds
+      this.updateTimer = setInterval(() => this.runInit(), 10000);
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
@@ -52,6 +63,10 @@ class App extends Component {
       console.error(error);
     }
   };
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
 
   runInit = async () => {
     console.log("==> runInit", this.state);
@@ -131,6 +146,10 @@ class App extends Component {
   handleRegisterVoter = async () => {
     const { accounts, contract } = this.state;
     const address = this.address.value;
+    if (!address) {
+      alert("The address can't be empty !");
+      return;
+    }
     await contract.methods.registerVoter(address).send({ from: accounts[0] });
     this.address.value = null;
     this.getRegisterVoterList();
@@ -139,6 +158,10 @@ class App extends Component {
   handleRegisterProposal = async () => {
     const { accounts, contract } = this.state;
     const proposal = this.proposal.value;
+    if (!proposal) {
+      alert("The proposal can't be empty !");
+      return;
+    }
     await contract.methods
       .registerProposal(proposal)
       .send({ from: accounts[0] });

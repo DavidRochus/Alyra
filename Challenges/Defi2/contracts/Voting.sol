@@ -4,8 +4,6 @@ pragma solidity 0.6.11;
 
 import "../client/node_modules/@openzeppelin/contracts/access/Ownable.sol";
 
-//import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/release-v3.0.0/contracts/access/Ownable.sol";
-
 contract Voting is Ownable {
     struct Voter {
         bool isRegistered;
@@ -125,7 +123,6 @@ contract Voting is Ownable {
         emit VoterRegistered(_address);
     }
 
-    /* DRODRO --> */
     function getVoterListAddresses()
         public
         view
@@ -138,8 +135,6 @@ contract Voting is Ownable {
     function getProposalCount() public view returns (uint256) {
         return proposals.length;
     }
-
-    /* <-- DRODRO */
 
     function isVoterRegistered(address _voterAddress)
         public
@@ -191,7 +186,6 @@ contract Voting is Ownable {
         private
         onlyOwner
         onlyValidWorkflowStatus(WorkflowStatus.VotingSessionEnded)
-        onlyRegisteredVoters
     {
         //TODO: Manage equality
         uint256 maxVoteCount = 0;
