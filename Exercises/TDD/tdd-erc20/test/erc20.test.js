@@ -9,6 +9,7 @@ contract("ERC20", function (accounts) {
   const _decimals = new BN(18);
   const owner = accounts[0];
   const recipient = accounts[1];
+  const spender = accounts[2];
 
   beforeEach(async function () {
     this.ERC20Instance = await ERC20.new(_initialsupply, { from: owner });
@@ -62,9 +63,9 @@ contract("ERC20", function (accounts) {
       recipient
     );
     let amount = new BN(10);
-    await this.ERC20Instance.approve(recipient, amount, { from: owner });
+    await this.ERC20Instance.approve(spender, amount, { from: owner });
     await this.ERC20Instance.transferFrom(owner, recipient, amount, {
-      from: recipient,
+      from: spender,
     });
 
     let balanceOwnerAfterTransfer = await this.ERC20Instance.balanceOf(owner);
