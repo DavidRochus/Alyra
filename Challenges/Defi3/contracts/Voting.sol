@@ -2,7 +2,7 @@
 
 pragma solidity 0.6.11;
 
-import "../client/node_modules/@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Voting is Ownable {
     struct Voter {
@@ -25,12 +25,12 @@ contract Voting is Ownable {
         VotesTallied
     }
 
-    uint256 private winningProposalId;
-    WorkflowStatus private currentWorkflowStatus =
+    uint256 public winningProposalId;
+    WorkflowStatus public currentWorkflowStatus =
         WorkflowStatus.RegisteringVoters;
     Proposal[] public proposals;
-    mapping(address => Voter) private voterList;
-    address[] private voterListAddresses;
+    mapping(address => Voter) public voterList;
+    address[] public voterListAddresses;
 
     event VoterRegistered(address voterAddress);
     event ProposalsRegistrationStarted();
@@ -74,14 +74,16 @@ contract Voting is Ownable {
         _;
     }
 
-    function nextWorkflowStatus() public onlyOwner {
+    function nextWorkflowStatus() external onlyOwner {
         WorkflowStatus _previousStatus = currentWorkflowStatus;
         if (currentWorkflowStatus == WorkflowStatus.RegisteringVoters) {
+            require(voterListAddresses.length > 0, "Register at least 1 Voter");
             currentWorkflowStatus = WorkflowStatus.ProposalsRegistrationStarted;
             emit ProposalsRegistrationStarted();
         } else if (
             currentWorkflowStatus == WorkflowStatus.ProposalsRegistrationStarted
         ) {
+            require(proposals.length > 0, "Register at least 1 proposal");
             currentWorkflowStatus = WorkflowStatus.ProposalsRegistrationEnded;
             emit ProposalsRegistrationEnded();
         } else if (
@@ -104,17 +106,12 @@ contract Voting is Ownable {
         }
     }
 
-    function getWorkflowStatus()
-        public
-        view
-        onlyOwner
-        returns (WorkflowStatus)
-    {
+    function getWorkflowStatus() external view returns (WorkflowStatus) {
         return currentWorkflowStatus;
     }
 
     function registerVoter(address _address)
-        public
+        external
         onlyOwner
         onlyValidWorkflowStatus(WorkflowStatus.RegisteringVoters)
     {
@@ -123,16 +120,11 @@ contract Voting is Ownable {
         emit VoterRegistered(_address);
     }
 
-    function getVoterListAddresses()
-        public
-        view
-        onlyOwner
-        returns (address[] memory)
-    {
+    function getVoterListAddresses() external view returns (address[] memory) {
         return voterListAddresses;
     }
 
-    function getProposalCount() public view returns (uint256) {
+    function getProposalCount() external view returns (uint256) {
         return proposals.length;
     }
 
@@ -145,7 +137,7 @@ contract Voting is Ownable {
     }
 
     function registerProposal(string memory _description)
-        public
+        external
         onlyValidWorkflowStatus(WorkflowStatus.ProposalsRegistrationStarted)
         onlyRegisteredVoters
     {
@@ -157,7 +149,7 @@ contract Voting is Ownable {
     }
 
     function voteForProposal(uint256 _proposalId)
-        public
+        external
         onlyValidWorkflowStatus(WorkflowStatus.VotingSessionStarted)
         onlyRegisteredVoters
         onlyIfNotVoted(msg.sender)
@@ -173,7 +165,7 @@ contract Voting is Ownable {
     }
 
     function getVoteFromVoter(address _voterAddress)
-        public
+        external
         view
         onlyRegisteredVoters
         onlyIfVoted(_voterAddress)
@@ -183,7 +175,7 @@ contract Voting is Ownable {
     }
 
     function tallyVotes()
-        private
+        public
         onlyOwner
         onlyValidWorkflowStatus(WorkflowStatus.VotingSessionEnded)
     {
@@ -198,7 +190,7 @@ contract Voting is Ownable {
     }
 
     function getWinningProposal()
-        public
+        external
         view
         onlyValidWorkflowStatus(WorkflowStatus.VotesTallied)
         returns (string memory)

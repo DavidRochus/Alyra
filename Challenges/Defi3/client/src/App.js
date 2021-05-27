@@ -1,10 +1,5 @@
 import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Card from "react-bootstrap/Card";
-import ListGroup from "react-bootstrap/ListGroup";
-import Table from "react-bootstrap/Table";
 import VotingContract from "./contracts/Voting.json";
 import getWeb3 from "./getWeb3";
 
@@ -35,11 +30,11 @@ class App extends Component {
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
-      if (networkId != 1337) {
+      if (networkId != 1337 && networkId != 3) {
         alert(
           "Wrong Network(" +
             networkId +
-            "). Please Switch to Alyra Network(1337) "
+            "). Please Switch to Alyra Network(1337) or Ropsten Network(3) "
         );
         return;
       }
@@ -48,9 +43,29 @@ class App extends Component {
         VotingContract.abi,
         deployedNetwork && deployedNetwork.address
       );
+      console.log("instance", instance);
 
       // Set a timer to refresh the page every 10 seconds
-      this.updateTimer = setInterval(() => this.runInit(), 10000);
+      /* Removed and replaced by Event Management -->
+      this.updateTimer = setInterval(() => this.runInit(), 10000); */
+
+      // Subscribe to events
+      instance.events
+        .WorkflowStatusChange()
+        .on("data", (event) => this.doWhenEvent(event))
+        .on("error", console.error);
+      instance.events
+        .VoterRegistered()
+        .on("data", (event) => this.doWhenEvent(event))
+        .on("error", console.error);
+      instance.events
+        .ProposalRegistered()
+        .on("data", (event) => this.doWhenEvent(event))
+        .on("error", console.error);
+      instance.events
+        .Voted()
+        .on("data", (event) => this.doWhenEvent(event))
+        .on("error", console.error);
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
@@ -101,6 +116,38 @@ class App extends Component {
     });
   };
 
+  doWhenEvent = async (data) => {
+    console.log("==> doWhenEvent", data.event);
+    const { accounts, contract } = this.state;
+
+    switch (data.event) {
+      case "WorkflowStatusChange":
+        this.runInit();
+        break;
+      case "VoterRegistered":
+        const voterlist = await contract.methods.getVoterListAddresses().call();
+        this.setState({
+          voterlist: voterlist,
+        });
+        break;
+      case "ProposalRegistered":
+      case "Voted":
+        const proposalCount = await contract.methods.getProposalCount().call();
+        let proposallist = [];
+        for (let proposalId = 0; proposalId < proposalCount; proposalId++) {
+          let proposal = await contract.methods.proposals(proposalId).call();
+          proposal["id"] = proposalId;
+          proposallist.push(proposal);
+        }
+        this.setState({
+          proposallist: proposallist,
+        });
+        break;
+      default:
+        console.log("Event not managed");
+    }
+  };
+
   getWorkflowStatus = async () => {
     console.log("==> getWorkflowStatus");
     const { contract } = this.state;
@@ -139,7 +186,6 @@ class App extends Component {
     console.log("Incrementing Workflow");
     const { accounts, contract } = this.state;
     await contract.methods.nextWorkflowStatus().send({ from: accounts[0] });
-    //this.getWorkflowStatus();
     this.runInit();
   };
 
