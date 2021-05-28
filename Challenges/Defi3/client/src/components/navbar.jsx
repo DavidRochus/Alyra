@@ -92,7 +92,7 @@ class NavBar extends Component {
       <nav className="navbar navbar-light bg-light">
         <div className="container-fluid">
           <span className="navbar-brand mb-0 h1">
-            <strong>Voting Dapp2</strong>
+            <strong>Voting Dapp</strong>
           </span>
           {this.renderWorkflowManager()}
           {this.renderUserAccount()}
