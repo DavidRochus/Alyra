@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/alyra-defi3/static/css/main.b100e6da.chunk.css",
-    "main.js": "/alyra-defi3/static/js/main.20ddeeb2.chunk.js",
-    "main.js.map": "/alyra-defi3/static/js/main.20ddeeb2.chunk.js.map",
+    "main.js": "/alyra-defi3/static/js/main.c7628f73.chunk.js",
+    "main.js.map": "/alyra-defi3/static/js/main.c7628f73.chunk.js.map",
     "runtime-main.js": "/alyra-defi3/static/js/runtime-main.8a17f591.js",
     "runtime-main.js.map": "/alyra-defi3/static/js/runtime-main.8a17f591.js.map",
     "static/css/2.d687d305.chunk.css": "/alyra-defi3/static/css/2.d687d305.chunk.css",
     "static/js/2.fb3f7fc0.chunk.js": "/alyra-defi3/static/js/2.fb3f7fc0.chunk.js",
     "static/js/2.fb3f7fc0.chunk.js.map": "/alyra-defi3/static/js/2.fb3f7fc0.chunk.js.map",
     "index.html": "/alyra-defi3/index.html",
-    "precache-manifest.5ba07c4e2a4f551555292f528aa96862.js": "/alyra-defi3/precache-manifest.5ba07c4e2a4f551555292f528aa96862.js",
+    "precache-manifest.6813c0fd7e43d066829c7910c9bde652.js": "/alyra-defi3/precache-manifest.6813c0fd7e43d066829c7910c9bde652.js",
     "service-worker.js": "/alyra-defi3/service-worker.js",
     "static/css/2.d687d305.chunk.css.map": "/alyra-defi3/static/css/2.d687d305.chunk.css.map",
     "static/css/main.b100e6da.chunk.css.map": "/alyra-defi3/static/css/main.b100e6da.chunk.css.map"
@@ -19,6 +19,6 @@
     "static/css/2.d687d305.chunk.css",
     "static/js/2.fb3f7fc0.chunk.js",
     "static/css/main.b100e6da.chunk.css",
-    "static/js/main.20ddeeb2.chunk.js"
+    "static/js/main.c7628f73.chunk.js"
   ]
 }
