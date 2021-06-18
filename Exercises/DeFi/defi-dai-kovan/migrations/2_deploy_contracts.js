@@ -2,19 +2,26 @@
 const Dai = artifacts.require("Dai");
 const MyDeFiProject = artifacts.require("MyDeFiProject");
 
+const tokenAddress = "0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa"; //DAI
+
 module.exports = async function (deployer, _network, accounts) {
-  //await deployer.deploy(Dai);
-  //const dai = await Dai.deployed();
-  const daiKovanContract = 0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa;
-  //await deployer.deploy(MyDeFiProject, dai.address);
-  await deployer.deploy(MyDeFiProject, daiKovanContract);
+  const dai = await Dai.at(tokenAddress);
+  await deployer.deploy(MyDeFiProject, tokenAddress);
+
   const myDeFiProject = await MyDeFiProject.deployed();
-  //await dai.faucet(myDeFiProject.address, 100);
-  await myDeFiProject.foo(accounts[1], 100);
+  await dai.transfer(myDeFiProject.address, 100, {
+    from: accounts[0],
+  });
 
-  const balance0 = await dai.balanceOf(myDeFiProject.address);
-  const balance1 = await dai.balanceOf(accounts[1]);
+  const contractBeforeBalance = await dai.balanceOf(myDeFiProject.address);
+  const accountBeforeBalance = await dai.balanceOf(accounts[0]);
+  console.log("contractBeforeBalance: " + contractBeforeBalance.toString());
+  console.log("accountBeforeBalance: " + accountBeforeBalance.toString());
 
-  console.log(balance0.toString());
-  console.log(balance1.toString());
+  await myDeFiProject.foo(accounts[0], 100);
+
+  const contractAfterBalance = await dai.balanceOf(myDeFiProject.address);
+  const accountAfterBalance = await dai.balanceOf(accounts[0]);
+  console.log("contractAfterBalance: " + contractAfterBalance.toString());
+  console.log("accountAfterBalance: " + accountAfterBalance.toString());
 };
